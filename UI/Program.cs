@@ -1,41 +1,60 @@
 ﻿using Core;
 
 var textFile = new SimpleTextFile("c:\\tmp\\animals.txt");
-var lines = textFile.ReadLines();
-var list = lines.ToList();
-var option = string.Empty;
-
-do
+using var logger = new LogWriter("c:\\tmp\\app.log");
+try
 {
-    option = Menu();
-    switch (option)
+    logger.WriteLog("info", "Application started");
+    var lines = textFile.ReadLines();
+    var list = lines.ToList();
+    var option = string.Empty;
+
+    do
     {
-        case "1":
-            foreach (var item in list)
-            {
-                Console.WriteLine(item);
-            }
-            break;
-        case "2":
-            Console.Write("Enter a new line: ");
-            var newLine = Console.ReadLine();
-            list.Add(newLine!);
-            break;
-        case "3":
-            Console.Write("Enter a new line: ");
-            var lineToRemove = Console.ReadLine();
-            list.Remove(lineToRemove!);
-            break;
-        case "6":
-            textFile.WriteLines(list.ToArray());
-            Console.WriteLine("Changes saved.");
-            break;
-        default:
-            break;
-    }
-} while (option != "0");
-textFile.WriteLines(list.ToArray());
-Console.WriteLine("Changes saved.");
+        option = Menu();
+        switch (option)
+        {
+            case "1":
+                foreach (var item in list)
+                {
+                    Console.WriteLine(item);
+                }
+                logger.WriteLog("info", "File listed.");
+                break;
+            case "2":
+                Console.Write("Enter a new line: ");
+                var newLine = Console.ReadLine();
+                list.Add(newLine!);
+                logger.WriteLog("info", $"New line added: {newLine}");
+                break;
+            case "3":
+                Console.Write("Enter a new line: ");
+                var lineToRemove = Console.ReadLine();
+                list.Remove(lineToRemove!);
+                logger.WriteLog("info", $"Line removed: {lineToRemove}");
+                break;
+            case "6":
+                textFile.WriteLines(list.ToArray());
+                Console.WriteLine("Changes saved.");
+                logger.WriteLog("info", "File saved.");
+                break;
+            default:
+                break;
+        }
+    } while (option != "0");
+    textFile.WriteLines(list.ToArray());
+    Console.WriteLine("Changes saved.");
+
+}
+catch (Exception ex)
+{
+    logger.WriteLog("error", $"An error happened: {ex.Message}.");
+}
+finally
+{
+    logger.WriteLog("info", "Application ended.");
+}
+
 
 string Menu()
 {
