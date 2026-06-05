@@ -22,8 +22,8 @@ logger.WriteLog("infor", $"User {loggedUser.Username} logged in successfully");
 // Load people data
 
 var people = File.Exists(peoplePath) 
-    ? File.ReadAllLines(peoplePath).Where(1 => !string.IsNullOrWhiteSpace(1))
-        .Select(Person.Parse).ToList() 
+    ? File.ReadAllLines(peoplePath).Where(l => !string.IsNullOrWhiteSpace(l))
+          .Select(Person.Parse).ToList()
     : new List<Person>();
 
 // Menu
@@ -35,6 +35,8 @@ do
     Console.WriteLine("1. Show content");
     Console.WriteLine("2. Add person");
     Console.WriteLine("3. Save changes");
+    Console.WriteLine("4. Edit person");
+    Console.WriteLine("5. Delete person");
     Console.WriteLine("0. Exit");
     Console.Write("Choose an option: ");
     option = Console.ReadLine() ?? "0";
@@ -50,6 +52,12 @@ do
             break;
         case "3":
             SaveChanges(peoplePath, people, loggedUser.Username, logger);
+            break;
+        case "4":
+            EditPerson(people, loggedUser.Username, logger);
+            break;
+        case "5":
+            DeletePerson(people, loggedUser.Username, logger);
             break;
         case "0":
             SaveChanges(peoplePath, people, loggedUser.Username, logger);
@@ -162,6 +170,96 @@ void SaveChanges(string path, List<Person> list, string user, LogWriter log)
     File.WriteAllLines(path, list.Select(p => p.ToString()));
     Console.WriteLine("Cambios guardados.");
     log.WriteLog("info", $"[{user}] Changes saved. Total records: {list.Count}.");
+}
+
+void EditPerson(List<Person> list, string user, LogWriter log)
+{
+    Console.Write("\nIngrese el ID para editar: ");
+    if (!int.TryParse(Console.ReadLine(), out int id))
+    {
+        Console.WriteLine("ID inválido. ");
+        return;
+    }
+
+    var person = list.FirstOrDefault(p => p.Id == id);
+    if (person == null)
+    {
+        Console.WriteLine("Persona no encontrada.");
+        return;
+    }
+
+    Console.WriteLine($"Editando: {person.FullName} (Enter para mantener valor actual)");
+
+    Console.Write($"Firts name [{person.FirstName}]: ");
+    var input = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(input)) person.FirstName = input;
+
+    Console.Write($"Last Name [{person.LastName}]");
+    input = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(input)) person.LastName = input;
+
+    Console.Write($"Phone [{person.Phone}]");
+    input = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(input))
+    {
+        if (input.Replace(" ", " ").All(char.IsDigit) && input.Length >= 7)
+            person.Phone = input;
+        else
+            Console.WriteLine("Teléfono inválido, se mantiene el valor anterior. ");
+    }
+
+    Console.Write($"City [{person.City}]: ");
+    input = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(input)) person.City = input;
+
+    Console.Write($"Balance [{person.Balance:F2}]: ");
+    input = Console.ReadLine();
+    if (!String.IsNullOrWhiteSpace(input))
+    {
+        if (decimal.TryParse(input, out decimal balance) && balance >= 0)
+            person.Balance = balance;
+        else
+            Console.WriteLine("Balance inválido, se mantiene el valor anterior. ");
+    }
+
+    Console.WriteLine($"Persona '{person.FullName}' actualizada");
+    log.WriteLog("info", $"[{user}] Edited person ID={id}. ");
+}
+
+void DeletePerson(List<Person> list, string user, LogWriter log)
+{
+    Console.Write("\nIngrese el ID a eliminar: ");
+    if (!int.TryParse(Console.ReadLine(), out int id))
+    {
+        Console.WriteLine("ID inválido. ");
+        return;
+    }
+
+    var person = list.FirstOrDefault(p => p.Id == id);
+    if (person == null)
+    {
+        Console.WriteLine("Persona no encontrada. ");
+        return;
+    }
+
+    Console.WriteLine($"\nID:        {person.Id}");
+    Console.WriteLine($"Nombre:  {person.FullName}");
+    Console.WriteLine($"Phone:   {person.Phone}");
+    Console.WriteLine($"City:    {person.City}");
+    Console.WriteLine($"Balance: {person.Balance:C2}");
+    Console.Write($"\n¿Desea eliminar esta persona? (s/n): ");
+
+    var confirm = Console.ReadLine() ?? "";
+    if (confirm.ToLower() == "s")
+    {
+        list.Remove(person);
+        Console.WriteLine("Persona eliminada.");
+        log.WriteLog("info", $"[{user}] Deleted person ID={id}, Name={person.FullName}. ");
+    }
+    else
+    {
+        Console.WriteLine("Operacón cancelada.");
+    }
 }
 
 UserAccount? Login(string path, LogWriter log)
