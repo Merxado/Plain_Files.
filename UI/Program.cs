@@ -64,7 +64,7 @@ do
             logger.WriteLog("info", $"[{loggedUser.Username}] Application exited.");
             break;
         default:
-            Console.WriteLine("Opción no válida.");
+            Console.WriteLine("Invalid option.");
             break;
     }
 } while (option != "0");
@@ -73,7 +73,7 @@ void ShowContent(List<Person> list)
 {
     if (list.Count == 0)
     {
-        Console.WriteLine("No hay personas registradas.");
+        Console.WriteLine("There are no registered people.");
         return;
     }
     Console.WriteLine("\n========================================");
@@ -99,12 +99,12 @@ void AddPerson(List<Person> list, string user, LogWriter log)
         var input = Console.ReadLine() ?? "";
         if (!int.TryParse(input, out id))
         {
-            Console.WriteLine("El ID debe ser un número.");
+            Console.WriteLine("The ID must be a number.");
             continue;
         }
         if (list.Any(p => p.Id == id))
         {
-            Console.WriteLine("Ese ID ya existe. Ingrese uno diferente.");
+            Console.WriteLine("That ID already exists. Please enter a different one.");
             continue;
         }
         break;
@@ -116,7 +116,7 @@ void AddPerson(List<Person> list, string user, LogWriter log)
         Console.Write("First name: ");
         firstName = Console.ReadLine() ?? "";
         if (!string.IsNullOrWhiteSpace(firstName)) break;
-        Console.WriteLine("El nombre no puede estar vacío.");
+        Console.WriteLine("The first name cannot be empty.");
     }
 
     string lastName;
@@ -125,7 +125,7 @@ void AddPerson(List<Person> list, string user, LogWriter log)
         Console.Write("Last name: ");
         lastName = Console.ReadLine() ?? "";
         if (!string.IsNullOrWhiteSpace(lastName)) break;
-        Console.WriteLine("El apellido no puede estar vacío.");
+        Console.WriteLine("The last name cannot be empty.");
     }
 
     string phone;
@@ -135,7 +135,7 @@ void AddPerson(List<Person> list, string user, LogWriter log)
         phone = Console.ReadLine() ?? "";
         if (phone.Replace(" ", "").All(char.IsDigit) && phone.Length >= 7)
             break;
-        Console.WriteLine("Teléfono inválido. Solo números, mínimo 7 dígitos.");
+        Console.WriteLine("Invalid phone number. Only digits, minimum 7 characters.");
     }
 
     Console.Write("City: ");
@@ -147,7 +147,7 @@ void AddPerson(List<Person> list, string user, LogWriter log)
         Console.Write("Balance: ");
         if (decimal.TryParse(Console.ReadLine(), out balance) && balance >= 0)
             break;
-        Console.WriteLine("El balance debe ser un número positivo.");
+        Console.WriteLine("The balance must be a positive number.");
     }
 
     var person = new Person
@@ -161,36 +161,36 @@ void AddPerson(List<Person> list, string user, LogWriter log)
     };
 
     list.Add(person);
-    Console.WriteLine($"Persona '{person.FullName}' agregada correctamente.");
+    Console.WriteLine($"Person '{person.FullName}' added successfully.");
     log.WriteLog("info", $"[{user}] Added person: ID={id}, Name={person.FullName}.");
 }
 
 void SaveChanges(string path, List<Person> list, string user, LogWriter log)
 {
     File.WriteAllLines(path, list.Select(p => p.ToString()));
-    Console.WriteLine("Cambios guardados.");
+    Console.WriteLine("Changes saved.");
     log.WriteLog("info", $"[{user}] Changes saved. Total records: {list.Count}.");
 }
 
 void EditPerson(List<Person> list, string user, LogWriter log)
 {
-    Console.Write("\nIngrese el ID para editar: ");
+    Console.Write("\nEnter ID to edit: ");
     if (!int.TryParse(Console.ReadLine(), out int id))
     {
-        Console.WriteLine("ID inválido. ");
+        Console.WriteLine("Invalid ID.");
         return;
     }
 
     var person = list.FirstOrDefault(p => p.Id == id);
     if (person == null)
     {
-        Console.WriteLine("Persona no encontrada.");
+        Console.WriteLine("Person not found.");
         return;
     }
 
-    Console.WriteLine($"Editando: {person.FullName} (Enter para mantener valor actual)");
+    Console.WriteLine($"Editing: {person.FullName} (Press Enter to keep current value)");
 
-    Console.Write($"Firts name [{person.FirstName}]: ");
+    Console.Write($"First name [{person.FirstName}]: ");
     var input = Console.ReadLine();
     if (!string.IsNullOrWhiteSpace(input)) person.FirstName = input;
 
@@ -205,7 +205,7 @@ void EditPerson(List<Person> list, string user, LogWriter log)
         if (input.Replace(" ", " ").All(char.IsDigit) && input.Length >= 7)
             person.Phone = input;
         else
-            Console.WriteLine("Teléfono inválido, se mantiene el valor anterior. ");
+            Console.WriteLine("Invalid phone number, keeping the previous value. ");
     }
 
     Console.Write($"City [{person.City}]: ");
@@ -219,26 +219,26 @@ void EditPerson(List<Person> list, string user, LogWriter log)
         if (decimal.TryParse(input, out decimal balance) && balance >= 0)
             person.Balance = balance;
         else
-            Console.WriteLine("Balance inválido, se mantiene el valor anterior. ");
+            Console.WriteLine("Invalid balance, keeping the previous value. ");
     }
 
-    Console.WriteLine($"Persona '{person.FullName}' actualizada");
+    Console.WriteLine($"Person '{person.FullName}' updated.");
     log.WriteLog("info", $"[{user}] Edited person ID={id}. ");
 }
 
 void DeletePerson(List<Person> list, string user, LogWriter log)
 {
-    Console.Write("\nIngrese el ID a eliminar: ");
+    Console.Write("\nEnter ID to delete: ");
     if (!int.TryParse(Console.ReadLine(), out int id))
     {
-        Console.WriteLine("ID inválido. ");
+        Console.WriteLine("Invalid ID.");
         return;
     }
 
     var person = list.FirstOrDefault(p => p.Id == id);
     if (person == null)
     {
-        Console.WriteLine("Persona no encontrada. ");
+        Console.WriteLine("Person not found.");
         return;
     }
 
@@ -247,7 +247,7 @@ void DeletePerson(List<Person> list, string user, LogWriter log)
     Console.WriteLine($"Phone:   {person.Phone}");
     Console.WriteLine($"City:    {person.City}");
     Console.WriteLine($"Balance: {person.Balance:C2}");
-    Console.Write($"\n¿Desea eliminar esta persona? (s/n): ");
+    Console.Write($"\nDo you want to delete this person? (s/n): ");
 
     var confirm = Console.ReadLine() ?? "";
     if (confirm.ToLower() == "s")
@@ -258,7 +258,7 @@ void DeletePerson(List<Person> list, string user, LogWriter log)
     }
     else
     {
-        Console.WriteLine("Operacón cancelada.");
+        Console.WriteLine("Operation cancelled.");
     }
 }
 
