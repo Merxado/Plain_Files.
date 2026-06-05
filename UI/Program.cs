@@ -37,6 +37,7 @@ do
     Console.WriteLine("3. Save changes");
     Console.WriteLine("4. Edit person");
     Console.WriteLine("5. Delete person");
+    Console.WriteLine("6. Report by city");
     Console.WriteLine("0. Exit");
     Console.Write("Choose an option: ");
     option = Console.ReadLine() ?? "0";
@@ -58,6 +59,9 @@ do
             break;
         case "5":
             DeletePerson(people, loggedUser.Username, logger);
+            break;
+        case "6":
+            ReportByCity(people, loggedUser.Username, logger);
             break;
         case "0":
             SaveChanges(peoplePath, people, loggedUser.Username, logger);
@@ -260,6 +264,46 @@ void DeletePerson(List<Person> list, string user, LogWriter log)
     {
         Console.WriteLine("Operation cancelled.");
     }
+}
+
+void ReportByCity(List<Person> list, string user, LogWriter log)
+{
+    if (list.Count == 0)
+    {
+        Console.WriteLine("There's no person registered."); 
+        return;
+    }
+
+    var grouped = list
+        .OrderBy(p => p.City)
+        .ThenBy(p => p.FullName)
+        .GroupBy(p => p.City);
+
+    decimal grandTotal = 0;
+
+    Console.WriteLine($"\n{"ID",-5} {"First Name",-15} {"Last Name",-15} {"Balance",-10}");
+
+    foreach (var group in grouped)
+    {
+        Console.WriteLine($"\nCity: {group.Key}");
+        Console.WriteLine($"{"-",5} {"----------------",15} {"-----------------",15} {"-----------------",15}");
+
+        decimal cityTotal = 0;
+        foreach(var p in group)
+        {
+            Console.WriteLine(($"{p.Id,-5} {p.FirstName,-15} {p.LastName,-15} {p.Balance,15:N2}"));
+            cityTotal += p.Balance;
+        }
+
+        Console.WriteLine($"{"═",5} {"═════════════",15} {"═════════════",15} {"═════════════",15}");
+        Console.WriteLine($"Total: {group.Key,-30} {cityTotal,15:N2}");
+        grandTotal += cityTotal;
+    }
+
+    Console.WriteLine($"\n{"═",5} {"═════════════",15} {"═════════════",15} {"═════════════",15}");
+    Console.WriteLine($"{"Total General:",-37} {grandTotal,15:N2}");
+
+    log.WriteLog("info", $"[{user}] Generated report by city.");
 }
 
 UserAccount? Login(string path, LogWriter log)
