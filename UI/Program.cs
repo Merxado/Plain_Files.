@@ -250,7 +250,7 @@ void DeletePerson(List<Person> list, string user, LogWriter log)
     Console.WriteLine($"Nombre:  {person.FullName}");
     Console.WriteLine($"Phone:   {person.Phone}");
     Console.WriteLine($"City:    {person.City}");
-    Console.WriteLine($"Balance: {person.Balance:C2}");
+    Console.WriteLine($"Balance: ${person.Balance:N2}");
     Console.Write($"\nDo you want to delete this person? (s/n): ");
 
     var confirm = Console.ReadLine() ?? "";
