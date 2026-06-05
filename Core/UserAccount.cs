@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Core
 {
-    internal class UserAccount
+    public class UserAccount
     {
         public string Username { get; set; } = null;
         public string Password { get; set; } = null;

@@ -1,11 +1,11 @@
 ﻿using Core;
 
-var usersPath = "c:\\users.txt";
-var peoplePath = "c:\\people.txt";
-var logPath = "c:\\logo.txt";
+var usersPath = "c:\\tmp\\Users.txt";
+var peoplePath = "c:\\tmp\\people.txt";
+var logPath = "c:\\tmp\\log.txt";
 
 using var logger = new LogWriter(logPath);
-logger.WriteLog("infor", "Application started");
+logger.WriteLog("info", "Application started");
 
 // Login
 var loggedUser = Login(usersPath, logger);
