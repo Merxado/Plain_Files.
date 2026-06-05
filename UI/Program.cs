@@ -86,7 +86,7 @@ void ShowContent(List<Person> list)
         Console.WriteLine($"\n{p.Id,-5}   {p.FullName}");
         Console.WriteLine($"        Phone:   {p.Phone}");
         Console.WriteLine($"        City:    {p.City}");
-        Console.WriteLine($"        Balance: {p.Balance,20:C2}");
+        Console.WriteLine($"        Balance: ${p.Balance,19:N2}");
     }
     Console.WriteLine("\n========================================");
 }
